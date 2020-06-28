@@ -17,7 +17,7 @@ function runEnter() {
     // Prevent the page from refreshing
     d3.event.preventDefault();
     // Remove all previous table data
-    d3.selectAll("tr").remove(); 
+    d3.selectAll("td").remove(); 
     // Select the input element
     var inputElement = d3.select("#datetime");
     // Get the value of the input element
