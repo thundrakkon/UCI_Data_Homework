@@ -17,6 +17,7 @@ L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?acce
     accessToken: API_KEY
 }).addTo(myMap);
 
+// Function that returns colors
 function getColor(d) {
     if (d > 5) {return "teal"}
     else if (d >= 4) {return "lightseagreen"}
@@ -31,37 +32,35 @@ function getColor(d) {
     else {return "lightcyan"}
 }
 
-var col_pal = ["lightcyan", "aqua", "aquamarine", "turquoise", "lightseagreen", "teal"]
+// Labels
 var leg_labels = ["0-1", "1-2", "2-3", "3-4", "4-5", "5+"]
-
 
 // Create legend
 var legend = L.control({
-    position: "bottomright",
-    // pal = colorFactor('RdYlGn')
+    position: "bottomright"
 });
 
+// Set up the legend
 legend.onAdd = function() {
     var div = L.DomUtil.create("div", "legend")
-    labels = ['<strong>Earthquake Magnitude</strong>'],
-    categories = leg_labels
+    // Add a title to the legend
+    labels = ['<strong>Magnitude</strong>']
 
-    for (var i = 0; i < categories.length; i++) {
-
+    // Add labels and color blocks to the legend
+    for (var i = 0; i < leg_labels.length; i++) {
         div.innerHTML += 
         labels.push(
-            `<i style="background:${getColor(categories[i] + 1)}"></i>
-        ${categories[i]}`
+            `<span style="background:${getColor(leg_labels[i])}"></span>
+        ${leg_labels[i]}`
         );
-        console.log(getColor(categories[i]))
     }
     div.innerHTML = labels.join('<br>');
 
     return div
 };
 
+// Add legend to the map
 legend.addTo(myMap);
-
 
 // Grabbing Json data
 d3.json(url).then((jsonData) => {
@@ -70,36 +69,31 @@ d3.json(url).then((jsonData) => {
     var data = jsonData.features
     console.log(data)
 
+    // Increase the marker size
     function markerSize(mag) {
         return mag * 5000;
-      }
+    }
       
-    // Adding pop-up marker for each location
+    // Adding circle marker for each location
     for (var i=0; i<data.length; i++) {
 
         var newMarker = L.circle([data[i].geometry.coordinates[1], data[i].geometry.coordinates[0]], {
             fillOpacity: 0.75,
             color: getColor(data[i].properties.mag),
             radius: markerSize(data[i].properties.mag)
-        })
-
+        });
 
         // Popup message
         newMarker.bindPopup(`<b>Magnitude: </b>${data[i].properties.mag}<hr><b>Location: </b>${data[i].properties.place}<hr><b>When: </b>${Date(data[i].properties.time)}`)
         // When hovering mouse icon over the marker, display popup message
         newMarker.on('mouseover', function (e) {
             this.openPopup()
-        })
+        });
         // When no longer hovering over the icon, close the popup
         newMarker.on('mouseout', function (e) {
             this.closePopup()
-        })
+        });
     
-        // Add click to zoom and center functionality
-        // newMarker.on('click', function (clickZoom){
-        //     myMap.setView(clickZoom.target.getLatLng(),10);
-        // })
-
         // Add to map
         newMarker.addTo(myMap)
     }

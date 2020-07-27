@@ -46,7 +46,6 @@ d3.csv("./assets/data/data.csv").then(function(stateData) {
     stateData.forEach(function(data) {
         data.healthcare = +data.healthcare;
         data.poverty = +data.poverty;
-        // data.abbr = +data.abbr;
     })
 
     // Scale functions
@@ -55,7 +54,7 @@ d3.csv("./assets/data/data.csv").then(function(stateData) {
         .range([0, width]);
     
     var yLinearScale = d3.scaleLinear()
-        .domain([8, d3.max(stateData, d => d.poverty)])
+        .domain([7, d3.max(stateData, d => d.poverty)])
         .range([height, 0]);
     
     // Axix functions
@@ -75,38 +74,37 @@ d3.csv("./assets/data/data.csv").then(function(stateData) {
         .data(stateData)
         .enter()
         .append("circle")
+            .attr("class", "stateCircle")
             .attr("cx", d => xLinearScale(d.healthcare))
             .attr("cy", d => yLinearScale(d.poverty))
-            .attr("r", "10")
-            .attr("fill", "darkblue")
+            .attr("r", "14")
             .attr("opacity", "0.5");
 
     // Add state abbreviations inside circles
     var stateText = chartGroup.selectAll("text")
         .data(stateData)
         .enter()
-        .append("g")
         .append("text")
         .attr("class", "stateText")
         .text(d => d.abbr)
             .attr("x", d => xLinearScale(d.healthcare))
             .attr("y", d => yLinearScale(d.poverty))
             .attr("dy", ".35em")
-            .attr('text-anchor', 'middle')
-            .attr("font-family", "times")
-            .attr("font-size", "8px")
-            .attr("font-weight", "bold")
-            .attr("fill", "white");
-    
+            // .attr('text-anchor', 'middle')
+            // .attr("font-family", "times")
+            // .attr("font-size", "8px")
+            // .attr("font-weight", "bold")
+            // .attr("fill", "white")
+            
     console.log(stateText)
 
     // Tool tip
     var toolTip = d3.tip()
-        .attr("class", "tooltip")
+        .attr("class", "d3-tip")
         .offset([0, -40])
         .style("font", "12px times")
         .style("font-weight", "bold")
-        .html(d => `Healthcare: ${d.healthcare}%<br>Poverty: ${d.poverty}%`);
+        .html(d => `${d.state}<br>Healthcare: ${d.healthcare}%<br>Poverty: ${d.poverty}%`);
 
     // Add tooltip to chart
     chartGroup.call(toolTip)
@@ -125,15 +123,15 @@ d3.csv("./assets/data/data.csv").then(function(stateData) {
         .attr("y", 0 - margin.left + 40)
         .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
-        .attr("class", "axisText")
-        .style("font", "14px times")
+        .attr("class", "aText")
+        // .style("font", "14px times")
         .style("font-weight", "bold")
         .text("In Poverty (%)");
 
     chartGroup.append("text")
         .attr("transform", `translate(${width/2 - 25}, ${height + margin.top + 30})`)
-        .attr("class", "axisText")
-        .style("font", "14px times")
+        .attr("class", "aText")
+        // .style("font", "14px times")
         .style("font-weight", "bold")
         .text("Lacks Healthcare (%)");
 }).catch(function(error) {
